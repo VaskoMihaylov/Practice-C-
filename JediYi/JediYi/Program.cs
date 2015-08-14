@@ -65,6 +65,7 @@ namespace JediYi
             comboMenu.AddItem(new MenuItem("useQcombo", "Use Q").SetValue(true));
             comboMenu.AddItem(new MenuItem("useEcombo", "Use E").SetValue(true));
             comboMenu.AddItem(new MenuItem("useRcombo", "Use R").SetValue(true));
+            comboMenu.AddItem(new MenuItem("useWcombo", "Use W for AA Reset").SetValue(true));
 
             //Add HarassMenu
             Menu harassMenu = Menu.AddSubMenu(new Menu("Harass", "Harass"));
@@ -154,6 +155,8 @@ namespace JediYi
             var useQc = Menu.Item("useQcombo").GetValue<bool>();
             var useRc = Menu.Item("useRcombo").GetValue<bool>();
             var useEc = Menu.Item("useEcombo").GetValue<bool>();
+            var useWc = Menu.Item("useWcombo").GetValue<bool>();
+
 
             if (useQc && Q.IsReady() && target.IsValidTarget(Q.Range))
             {
@@ -168,6 +171,14 @@ namespace JediYi
             if (useEc && E.IsReady() && Orbwalker.InAutoAttackRange(target))
             {
                 E.Cast();
+            }
+
+            else if (useWc && W.IsReady() && Orbwalker.InAutoAttackRange(target))
+            {
+                Player.IssueOrder(GameObjectOrder.AttackTo, target);
+                W.Cast();
+                Player.IssueOrder(GameObjectOrder.AttackTo, target);
+                Orbwalking.ResetAutoAttackTimer();
             }
 
             if (youmuu.IsReady() && Orbwalker.InAutoAttackRange(target))
@@ -314,7 +325,6 @@ namespace JediYi
                 Render.Circle.DrawCircle(Player.Position, Q.Range, Color.Aqua);
             }
         }
-
 
     }
 }
