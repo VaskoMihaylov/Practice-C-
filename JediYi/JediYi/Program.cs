@@ -85,6 +85,7 @@ namespace JediYi
             Menu miscMenu = Menu.AddSubMenu(new Menu("Misc", "Misc"));
             miscMenu.AddItem(new MenuItem("useWauto", "Auto Heal at % hp ->").SetValue(new Slider(20)));
             miscMenu.AddItem(new MenuItem("Qks", "Auto Ks Q").SetValue(true));
+            miscMenu.AddItem(new MenuItem("gapCloser", "Anti GapCloser Q").SetValue(true));
 
             //Add DrawMenu
             Menu drawMenu = Menu.AddSubMenu(new Menu("Drawings", "Drawings"));
@@ -94,6 +95,7 @@ namespace JediYi
             Menu.AddToMainMenu();
 
             Game.OnUpdate += Game_OnUpdate;
+            AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
             Drawing.OnDraw += Drawing_OnDraw;
 
             //Welcome Notification
@@ -283,6 +285,22 @@ namespace JediYi
 
             tiamat.Cast();
             hydra.Cast();
+        }
+        #endregion
+
+        #region Anti Gap Closer
+        private static void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
+        {
+            if (!gapcloser.Sender.IsValidTarget(Q.Range))
+            {
+                return;
+            }
+
+            if (gapcloser.Sender.IsValidTarget(Q.Range) && Menu.Item("gapCloser").GetValue<bool>() && Q.IsReady())
+            {
+                Q.Cast(gapcloser.Sender);
+            }
+
         }
         #endregion
 
