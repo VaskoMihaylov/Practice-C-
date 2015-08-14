@@ -112,6 +112,7 @@ namespace JediYi
 
             //Cast AutoHeal Function
             AutoHeal();
+            AutoKS();
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
@@ -314,6 +315,16 @@ namespace JediYi
 
         }
         #endregion
+
+        private static void AutoKS()
+        {
+            var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
+
+            if (Q.GetDamage(target) >= target.Health && Menu.Item("Qks").GetValue<bool>())
+            {
+                Q.Cast(target);
+            }
+        }
 
         private static void Drawing_OnDraw(EventArgs args)
         {
