@@ -173,9 +173,9 @@ namespace JediYi
                 }
             }
 
-            if (useRc && R.IsReady() && target.IsValidTarget(Q.Range * 1.5f))
+            if (useRc && R.IsReady())
             {
-                R.Cast();
+                rKI();
             }
 
             if (useEc && E.IsReady() && Orbwalker.InAutoAttackRange(target))
@@ -318,6 +318,24 @@ namespace JediYi
             }
         }
         #endregion
+
+        private static void rKI()
+        {
+            var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
+
+            if (target.IsValidTarget(Q.Range))
+            {
+                R.Cast();
+            }
+
+            if (target.IsValidTarget())
+            {
+                if (Player.Distance(target.Position) > Q.Range)
+                {
+                    R.Cast();
+                }
+            }
+        }
 
         #region Auto Heal
         private static void AutoHeal()
