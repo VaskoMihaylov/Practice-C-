@@ -116,29 +116,28 @@ namespace JediYi
             AutoHeal();
             AutoKS();
 
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            switch (Orbwalker.ActiveMode)
             {
-                FullCombo();
+                case Orbwalking.OrbwalkingMode.Combo:
+                    FullCombo();
+                    break;
+                case Orbwalking.OrbwalkingMode.LaneClear:
+                    JungleClear();
+
+                    var manaUse = Player.Mana * 100 / Player.MaxMana;
+
+                    if (manaUse >= Menu.Item("Qmana").GetValue<Slider>().Value)
+                    {
+                        LaneClear();
+                    }
+                    break;
+                case Orbwalking.OrbwalkingMode.LastHit:
+                    break;
+                case Orbwalking.OrbwalkingMode.Mixed:
+                    Harras();
+                    break;
             }
 
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
-            {
-                Harras();
-            }
-
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
-            {
-                JungleClear();
-
-                var manaUse = Player.Mana * 100 / Player.MaxMana;
-
-                if (manaUse >= Menu.Item("Qmana").GetValue<Slider>().Value)
-                {
-                    LaneClear();
-                }
-
-
-            }
         }
 
         #region Combo
@@ -290,30 +289,32 @@ namespace JediYi
         {
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
 
-
-            if (target.CountEnemiesInRange(Q.Range) >= 2)
+            if (target.IsValidTarget())
             {
-                Q.Cast(target);
-            }
+                if (target.CountEnemiesInRange(Q.Range) >= 2)
+                {
+                    Q.Cast(target);
+                }
 
-            if (target.IsRecalling() && target.IsValidTarget(Q.Range))
-            {
-                Q.Cast();
-            }
+                if (target.IsRecalling())
+                {
+                    Q.Cast();
+                }
 
-            if (target.IsMoving && !target.IsFacing(Player) && !Orbwalker.InAutoAttackRange(target))
-            {
-                Q.Cast(target);
-            }
+                if (target.IsMoving && !target.IsFacing(Player) && !Orbwalker.InAutoAttackRange(target))
+                {
+                    Q.Cast(target);
+                }
 
-            if (Player.Health < Player.MaxHealth / 3)
-            {
-                Q.Cast(target);
-            }
+                if (Player.Health < Player.MaxHealth / 3)
+                {
+                    Q.Cast(target);
+                }
 
-            if ((target.IsDashing() || target.LastCastedSpellName() == "SummonerFlash"))
-            {
-                Q.Cast(target);
+                if ((target.IsDashing() || target.LastCastedSpellName() == "SummonerFlash"))
+                {
+                    Q.Cast(target);
+                }
             }
         }
         #endregion
@@ -321,7 +322,7 @@ namespace JediYi
         #region Auto Heal
         private static void AutoHeal()
         {
-            if (Player.Health * 100 / Player.MaxHealth <= Menu.Item("useWauto").GetValue<Slider>().Value)
+            if (Player.Health * 100 / Player.MaxHealth <= Menu.Item("useWauto").GetValue<Slider>().Value && !Player.IsRecalling())
             {
                 W.Cast();
             }
@@ -377,9 +378,12 @@ namespace JediYi
         {
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
 
-            if (Q.GetDamage(target) >= target.Health && Menu.Item("Qks").GetValue<bool>())
+            if (target.IsValidTarget())
             {
-                Q.Cast(target);
+                if (Q.GetDamage(target) >= target.Health && Menu.Item("Qks").GetValue<bool>())
+                {
+                    Q.Cast(target);
+                }
             }
         }
         #endregion
