@@ -20,6 +20,9 @@ namespace JediYi
         //Spells
         private static Spell Q, W, E, R;
 
+        public static SpellSlot Ignite;
+        public static SpellSlot Smite;
+
         public static readonly string[] FleeSpells = { "JarvanIVEQ", "AatroxQ", "CaitlynEntrapment", "RiftWalk", "KhazixE", "LeblancSlide", "OrianaDetonateCommand", "slashCast", "RocketJump" };
 
         //Items
@@ -45,6 +48,9 @@ namespace JediYi
             W = new Spell(SpellSlot.W);
             E = new Spell(SpellSlot.E);
             R = new Spell(SpellSlot.R);
+
+            Smite = ObjectManager.Player.GetSpellSlot("SummonerDot");
+            Ignite = ObjectManager.Player.GetSpellSlot("SummonerSmite");
 
             //Define Itemes
             youmuu = new Items.Item(3142, 0f);
@@ -92,6 +98,8 @@ namespace JediYi
             miscMenu.AddItem(new MenuItem("Qks", "Auto Ks Q").SetValue(true));
             miscMenu.AddItem(new MenuItem("gapCloser", "Anti GapCloser Q").SetValue(true));
             miscMenu.AddItem(new MenuItem("OnInterruptable", "Interrupt with Q").SetValue(true));
+            miscMenu.AddItem(new MenuItem("useIgnite", "Use Ignite").SetValue(true));
+            miscMenu.AddItem(new MenuItem("useSmite", "Use Smite").SetValue(true));
 
             //Add DrawMenu
             Menu drawMenu = Menu.AddSubMenu(new Menu("Drawings", "Drawings"));
@@ -429,6 +437,16 @@ namespace JediYi
                 if (Q.GetDamage(target) >= target.Health && Menu.Item("Qks").GetValue<bool>())
                 {
                     Q.Cast(target);
+                }
+
+                if (calculateDmg(target) >= target.Health && Menu.Item("useIgnite").GetValue<bool>())
+                {
+                    Player.Spellbook.CastSpell(Ignite, target);
+                }
+
+                if (calculateDmg(target) >= target.Health && Menu.Item("useSmite").GetValue<bool>())
+                {
+                    Player.Spellbook.CastSpell(Smite, target);
                 }
             }
         }
