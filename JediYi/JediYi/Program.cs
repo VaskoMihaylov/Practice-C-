@@ -32,9 +32,6 @@ namespace JediYi
         static void Main(string[] args)
         {
             CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
-
-            Utility.HpBarDamageIndicator.DamageToUnit = calculateDmg;
-            Utility.HpBarDamageIndicator.Enabled = Menu.Item("drawDmg").GetValue<bool>();
         }
 
         private static void Game_OnGameLoad(EventArgs args)
@@ -119,6 +116,9 @@ namespace JediYi
         {
             if (Player.IsDead)
                 return;
+
+            Utility.HpBarDamageIndicator.DamageToUnit = calculateDmg;
+            Utility.HpBarDamageIndicator.Enabled = Menu.Item("drawDmg").GetValue<bool>();
 
             //Cast Functions
             AutoHeal();
