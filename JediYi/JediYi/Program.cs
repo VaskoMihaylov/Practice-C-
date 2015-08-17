@@ -20,7 +20,7 @@ namespace JediYi
         //Spells
         private static Spell Q, W, E, R;
 
-        public static readonly string[] FleeSpells = { "JarvanIVDemacianStandard", "RocketJump" };
+        public static readonly string[] FleeSpells = { "JarvanIVEQ", "AatroxQ", "CaitlynEntrapment", "RiftWalk", "KhazixE", "LeblancSlide", "OrianaDetonateCommand", "slashCast", "RocketJump" };
 
         //Items
         private static Items.Item youmuu, tiamat, hydra;
@@ -65,6 +65,7 @@ namespace JediYi
             //Add ComboMenu
             Menu comboMenu = Menu.AddSubMenu(new Menu("Combo", "Combo"));
             comboMenu.AddItem(new MenuItem("chaseMode", "Chase Mode").SetValue(new KeyBind('T', KeyBindType.Toggle))).Permashow(true, "Chase Mode");
+            comboMenu.AddItem(new MenuItem("saveChase", "Save Q only for Flee Spells").SetValue(false));
             comboMenu.AddItem(new MenuItem("useQcombo", "Use Q").SetValue(true));
             comboMenu.AddItem(new MenuItem("useEcombo", "Use E").SetValue(true));
             comboMenu.AddItem(new MenuItem("useRcombo", "Use R").SetValue(true));
@@ -290,21 +291,23 @@ namespace JediYi
         #region Chase Mode - Q Logic
         private static void qKI()
         {
+            var saveQ = Menu.Item("saveChase").GetValue<bool>();
+
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
 
             if (target.IsValidTarget())
             {
-                if (target.CountEnemiesInRange(Q.Range) >= 2)
+                if (target.CountEnemiesInRange(Q.Range) >= 2 && !saveQ)
                 {
                     Q.Cast(target);
                 }
 
-                if (target.IsRecalling())
+                if (target.IsRecalling() && !saveQ)
                 {
                     Q.Cast();
                 }
 
-                if (target.IsMoving && !target.IsFacing(Player) && !Orbwalker.InAutoAttackRange(target))
+                if (ObjectManager.Player.Distance(target.Position) > 550 && ObjectManager.Player.Distance(target.Position) < 600 && target.IsMoving && !saveQ)
                 {
                     Q.Cast(target);
                 }
@@ -385,11 +388,16 @@ namespace JediYi
         {
             if (FleeSpells.Any(args.SData.Name.Equals))
             {
+                var useChase = Menu.Item("chaseMode").GetValue<KeyBind>().Active;
+
                 var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
 
-                if (Q.IsReady() && target.IsValidTarget(Q.Range))
+                if (useChase)
                 {
-                    Q.Cast(target);
+                    if (Q.IsReady() && target.IsValidTarget(Q.Range))
+                    {
+                        Q.Cast(target);
+                    }
                 }
             }
         }
