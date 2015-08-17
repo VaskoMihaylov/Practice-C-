@@ -323,14 +323,14 @@ namespace JediYi
         {
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
 
-            if (target.IsValidTarget(Q.Range))
-            {
-                R.Cast();
-            }
-
             if (target.IsValidTarget())
             {
                 if (Player.Distance(target.Position) > Q.Range)
+                {
+                    R.Cast();
+                }
+
+                if (Player.Distance(target.Position) <= Q.Range)
                 {
                     R.Cast();
                 }
