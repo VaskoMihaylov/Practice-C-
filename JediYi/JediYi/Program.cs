@@ -32,6 +32,9 @@ namespace JediYi
         static void Main(string[] args)
         {
             CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
+
+            Utility.HpBarDamageIndicator.DamageToUnit = calculateDmg;
+            Utility.HpBarDamageIndicator.Enabled = Menu.Item("drawDmg").GetValue<bool>();
         }
 
         private static void Game_OnGameLoad(EventArgs args)
@@ -96,6 +99,7 @@ namespace JediYi
             //Add DrawMenu
             Menu drawMenu = Menu.AddSubMenu(new Menu("Drawings", "Drawings"));
             drawMenu.AddItem(new MenuItem("drawQ", "Q Range").SetValue(true));
+            drawMenu.AddItem(new MenuItem("drawDmg", "Draw Combo Damage").SetValue(true));
 
             //Add Menu to Shift Menu
             Menu.AddToMainMenu();
@@ -116,7 +120,7 @@ namespace JediYi
             if (Player.IsDead)
                 return;
 
-            //Cast AutoHeal Function
+            //Cast Functions
             AutoHeal();
             AutoKS();
 
@@ -307,7 +311,7 @@ namespace JediYi
                     Q.Cast();
                 }
 
-                if (ObjectManager.Player.Distance(target.Position) > 550 && target.IsMoving && !target.IsFacing(Player) && !saveQ)
+                if (ObjectManager.Player.Distance(target.Position) > 550 && ObjectManager.Player.Distance(target.Position) < 600 && target.IsMoving && !saveQ)
                 {
                     Q.Cast(target);
                 }
@@ -439,6 +443,20 @@ namespace JediYi
             {
                 Render.Circle.DrawCircle(Player.Position, Q.Range, Color.Aqua);
             }
+        }
+
+        private static float calculateDmg(Obj_AI_Hero target)
+        {
+            float dmg = 0;
+
+            if (Q.IsReady())
+                dmg += Q.GetDamage(target);
+            if (E.IsReady())
+                dmg += E.GetDamage(target);
+            if (R.IsReady())
+                dmg += R.GetDamage(target);
+
+            return dmg;
         }
 
     }
