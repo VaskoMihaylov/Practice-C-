@@ -20,6 +20,8 @@ namespace JediYi
         //Spells
         private static Spell Q, W, E, R;
 
+        public static readonly string[] FleeSpells = { "JarvanIVDemacianStandard", "RocketJump" };
+
         //Items
         private static Items.Item youmuu, tiamat, hydra;
 
@@ -100,6 +102,7 @@ namespace JediYi
             Game.OnUpdate += Game_OnUpdate;
             AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
             Interrupter2.OnInterruptableTarget += Interrupter2_OnInterruptableTarget;
+            Obj_AI_Base.OnProcessSpellCast += OnProcessSpellCast;
             Drawing.OnDraw += Drawing_OnDraw;
 
             //Welcome Notification
@@ -377,6 +380,19 @@ namespace JediYi
 
         }
         #endregion
+
+        private static void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (FleeSpells.Any(args.SData.Name.Equals))
+            {
+                var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
+
+                if (Q.IsReady() && target.IsValidTarget(Q.Range))
+                {
+                    Q.Cast(target);
+                }
+            }
+        }
 
         #region Interrupter
         private static void Interrupter2_OnInterruptableTarget(Obj_AI_Hero sender, Interrupter2.InterruptableTargetEventArgs args)
