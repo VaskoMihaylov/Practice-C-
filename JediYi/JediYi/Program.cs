@@ -307,7 +307,7 @@ namespace JediYi
                     Q.Cast();
                 }
 
-                if (ObjectManager.Player.Distance(target.Position) > 550 && ObjectManager.Player.Distance(target.Position) < 600 && target.IsMoving && !saveQ)
+                if (ObjectManager.Player.Distance(target.Position) > 550 && target.IsMoving && !target.IsFacing(Player) && !saveQ)
                 {
                     Q.Cast(target);
                 }
